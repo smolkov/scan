@@ -8,9 +8,8 @@ use anyhow::Result;
 pub struct Args {
     #[arg(short, long)]
     pub address: String,
-
-    #[arg(short, long)]
-    pub range: Option<String>,
+    #[arg(short, long,)]
+    pub range: String,
 }
 
 
