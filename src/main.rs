@@ -13,9 +13,10 @@ struct PortMessage {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
+    let range = args.port_range()?;
     let (tx, mut rx) = tokio::sync::mpsc::channel(1000);
     tokio::spawn(async move {
-        for port in 1..65000 {
+        for port in range {
             tokio::spawn(scan_port(tx.clone(), args.address.clone(), port));
         }
     });
