@@ -9,5 +9,7 @@ readme = "readme.md"
 [dependencies]
 anyhow = "1.0.82"
 clap = { version = "4.5.4", features = ["derive"] }
+etherparse = "0.14.3"
+pcap = "2.0.0"
 thiserror = "1.0.58"
 tokio = { version = "1.37.0", features = ["full"] }

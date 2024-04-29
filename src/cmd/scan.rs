@@ -18,7 +18,7 @@ pub struct Scan {
 }
 
 impl Scan {
-    pub fn run(&self) -> Result<()> {
+    pub async fn run(&self) -> Result<()> {
         let mut scanner = Scanner::scan(&self.address, self.port_range()?);
         tokio::spawn(async move {
             while let Some(msg) = scanner.recv().await {
@@ -26,7 +26,7 @@ impl Scan {
                     println!("port:{} {}", msg.port, msg.open);
                 }
             }
-        });
+        }).await?;
         Ok(())
     }
     pub fn port_range(&self) -> Result<PortRange> {
@@ -36,32 +36,24 @@ impl Scan {
 
 pub struct Scanner {
     rx: Receiver<PortInfo>,
-    max: u16,
-    step: u16,
 }
 
 impl Scanner {
     pub fn scan(address: &str, range: PortRange) -> Scanner {
         let (tx, mut rx) = tokio::sync::mpsc::channel(1000);
         let address = address.to_owned();
-        let max = range.steps();
-        let step = 0;
         tokio::spawn(async move {
             for port in range {
                 tokio::spawn(Scanner::scan_port(tx.clone(), address.clone(), port));
             }
         });
-        Scanner { rx, max, step }
+        Scanner { rx }
     }
     pub async fn recv(&mut self) -> Option<PortInfo> {
         let info = self.rx.recv().await;
-        // self.step += 1;
-        // if self.step >= self.max {
-        // self.rx.close();
-        // }
         info
     }
-    async fn scan_port(sender: Sender<PortInfo>, addr: String, port: u16) -> anyhow::Result<()> {
+    async fn scan_port(sender: Sender<PortInfo>, addr: String, port: u32) -> anyhow::Result<()> {
         let duration = Duration::from_millis(1800);
         if let Ok(Ok(_)) = timeout(
             duration,
