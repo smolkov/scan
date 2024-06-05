@@ -1,3 +1,3 @@
-# `scan ports`
+# `scan`
 
-Experimental rust project to scan ports fast using tokio.
+Experimental rust project to fast scan ports

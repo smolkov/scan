@@ -40,7 +40,7 @@ pub struct Scanner {
 
 impl Scanner {
     pub fn scan(address: &str, range: PortRange) -> Scanner {
-        let (tx, mut rx) = tokio::sync::mpsc::channel(1000);
+        let (tx, mut rx) = tokio::sync::mpsc::channel(65000);
         let address = address.to_owned();
         tokio::spawn(async move {
             for port in range {
